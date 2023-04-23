@@ -1,0 +1,14 @@
+name: VillagerGPT
+version: '${version}'
+main: tj.horner.villagergpt.VillagerGPT
+api-version: 1.19
+commands:
+  ttv:
+    description: Start a conversation with a villager
+    permission: villagergpt.ttv
+  ttvclear:
+    description: Clear your conversation with a villager
+    permission: villagergpt.ttvclear
+  ttvend:
+    description: End the current villager conversation
+    permission: villagergpt.ttvend

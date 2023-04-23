@@ -1,0 +1,13 @@
+# Obtain a key here: https://platform.openai.com
+openai-key: ""
+
+# If you have GPT-4 access, it is highly recommended to use it here.
+# Switch this to "gpt-4" if you do.
+openai-model: "gpt-3.5-turbo"
+
+# Log conversation messages to server console, useful for catching abuse
+log-conversations: true
+
+# Either "system" or "user"; configures the type of message the "preamble"
+# will be. "user" is more likely to work with GPT-3.5
+preamble-message-type: user
