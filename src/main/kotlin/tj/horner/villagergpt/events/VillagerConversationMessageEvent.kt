@@ -1,4 +1,4 @@
-package tj.horner.villagergpt.event
+package tj.horner.villagergpt.events
 
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatMessage

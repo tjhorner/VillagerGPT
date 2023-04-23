@@ -1,4 +1,4 @@
-package tj.horner.villagergpt.conversation.pipeline.processor
+package tj.horner.villagergpt.conversation.pipeline.processors
 
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -6,8 +6,8 @@ import tj.horner.villagergpt.conversation.VillagerConversation
 import tj.horner.villagergpt.conversation.pipeline.ConversationMessageAction
 import tj.horner.villagergpt.conversation.pipeline.ConversationMessageProcessor
 import tj.horner.villagergpt.conversation.pipeline.ConversationMessageTransformer
-import tj.horner.villagergpt.conversation.pipeline.action.PlaySoundAction
-import tj.horner.villagergpt.conversation.pipeline.action.ShakeHeadAction
+import tj.horner.villagergpt.conversation.pipeline.actions.PlaySoundAction
+import tj.horner.villagergpt.conversation.pipeline.actions.ShakeHeadAction
 
 class ActionProcessor : ConversationMessageProcessor, ConversationMessageTransformer {
     private val actionRegex = Regex("ACTION:([A-Z_]+)")

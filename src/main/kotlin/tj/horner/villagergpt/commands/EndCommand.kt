@@ -1,4 +1,4 @@
-package tj.horner.villagergpt.command
+package tj.horner.villagergpt.commands
 
 import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
 import net.kyori.adventure.text.Component

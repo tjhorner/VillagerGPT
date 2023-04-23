@@ -7,7 +7,7 @@ import com.destroystokyo.paper.entity.villager.ReputationType
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.plugin.Plugin
-import tj.horner.villagergpt.event.VillagerConversationMessageEvent
+import tj.horner.villagergpt.events.VillagerConversationMessageEvent
 import java.time.Duration
 import java.util.*
 import kotlin.random.Random

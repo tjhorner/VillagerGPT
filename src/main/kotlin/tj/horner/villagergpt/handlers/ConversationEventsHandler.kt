@@ -1,4 +1,4 @@
-package tj.horner.villagergpt.handler
+package tj.horner.villagergpt.handlers
 
 import com.aallam.openai.api.BetaOpenAI
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
@@ -17,9 +17,9 @@ import tj.horner.villagergpt.MetadataKey
 import tj.horner.villagergpt.VillagerGPT
 import tj.horner.villagergpt.chat.ChatMessageTemplate
 import tj.horner.villagergpt.conversation.formatting.MessageFormatter
-import tj.horner.villagergpt.event.VillagerConversationEndEvent
-import tj.horner.villagergpt.event.VillagerConversationMessageEvent
-import tj.horner.villagergpt.event.VillagerConversationStartEvent
+import tj.horner.villagergpt.events.VillagerConversationEndEvent
+import tj.horner.villagergpt.events.VillagerConversationMessageEvent
+import tj.horner.villagergpt.events.VillagerConversationStartEvent
 
 class ConversationEventsHandler(private val plugin: VillagerGPT) : Listener {
     @EventHandler

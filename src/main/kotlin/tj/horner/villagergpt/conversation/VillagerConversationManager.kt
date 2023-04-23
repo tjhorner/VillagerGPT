@@ -3,8 +3,8 @@ package tj.horner.villagergpt.conversation
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.plugin.Plugin
-import tj.horner.villagergpt.event.VillagerConversationEndEvent
-import tj.horner.villagergpt.event.VillagerConversationStartEvent
+import tj.horner.villagergpt.events.VillagerConversationEndEvent
+import tj.horner.villagergpt.events.VillagerConversationStartEvent
 
 class VillagerConversationManager(private val plugin: Plugin) {
     private val conversations: MutableList<VillagerConversation> = mutableListOf()

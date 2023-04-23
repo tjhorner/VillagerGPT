@@ -1,4 +1,4 @@
-package tj.horner.villagergpt.conversation.pipeline.action
+package tj.horner.villagergpt.conversation.pipeline.actions
 
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player

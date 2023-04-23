@@ -1,4 +1,4 @@
-package tj.horner.villagergpt.conversation.pipeline.processor
+package tj.horner.villagergpt.conversation.pipeline.processors
 
 import com.google.gson.Gson
 import net.kyori.adventure.text.Component
@@ -12,8 +12,8 @@ import tj.horner.villagergpt.conversation.VillagerConversation
 import tj.horner.villagergpt.conversation.formatting.MessageFormatter
 import tj.horner.villagergpt.conversation.pipeline.ConversationMessageAction
 import tj.horner.villagergpt.conversation.pipeline.ConversationMessageProcessor
-import tj.horner.villagergpt.conversation.pipeline.action.SendPlayerMessageAction
-import tj.horner.villagergpt.conversation.pipeline.action.SetTradesAction
+import tj.horner.villagergpt.conversation.pipeline.actions.SendPlayerMessageAction
+import tj.horner.villagergpt.conversation.pipeline.actions.SetTradesAction
 
 class TradeOfferProcessor : ConversationMessageProcessor {
     private val gson = Gson()

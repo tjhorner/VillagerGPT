@@ -1,4 +1,4 @@
-package tj.horner.villagergpt.conversation.pipeline.producer
+package tj.horner.villagergpt.conversation.pipeline.producers
 
 import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatCompletionRequest

@@ -1,4 +1,4 @@
-package tj.horner.villagergpt.event
+package tj.horner.villagergpt.events
 
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager

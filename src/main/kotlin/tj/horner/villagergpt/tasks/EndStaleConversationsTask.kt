@@ -1,4 +1,4 @@
-package tj.horner.villagergpt.task
+package tj.horner.villagergpt.tasks
 
 import org.bukkit.scheduler.BukkitRunnable
 import tj.horner.villagergpt.VillagerGPT
