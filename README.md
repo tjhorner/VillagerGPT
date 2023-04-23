@@ -1,4 +1,4 @@
-# Overview
+# VillagerGPT
 
 VillagerGPT breathes new life into your server's villagers, allowing players to talk and trade with them using the same technology that powers ChatGPT. Players can have a conversation with any villager and haggle for better deals, or come up with previously impossible trades.
 
