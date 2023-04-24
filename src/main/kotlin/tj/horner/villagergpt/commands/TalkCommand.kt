@@ -32,7 +32,7 @@ class TalkCommand(private val plugin: VillagerGPT) : SuspendingCommandExecutor {
             return true
         }
 
-        val message = Component.text("Please right-click on a villager to speak to")
+        val message = Component.text("Please right-click on a villager to speak with")
             .decorate(TextDecoration.ITALIC)
 
         player.sendMessage(ChatMessageTemplate.withPluginNamePrefix(message))

@@ -13,6 +13,7 @@ import tj.horner.villagergpt.conversation.pipeline.processors.TradeOfferProcesso
 import tj.horner.villagergpt.conversation.pipeline.producers.OpenAIMessageProducer
 import tj.horner.villagergpt.handlers.ConversationEventsHandler
 import tj.horner.villagergpt.tasks.EndStaleConversationsTask
+import java.util.logging.Level
 
 class VillagerGPT : SuspendingJavaPlugin() {
     val conversationManager = VillagerConversationManager(this)
@@ -26,6 +27,12 @@ class VillagerGPT : SuspendingJavaPlugin() {
 
     override suspend fun onEnableAsync() {
         saveDefaultConfig()
+
+        if (!validateConfig()) {
+            logger.log(Level.WARNING, "VillagerGPT has not been configured correctly! Please set the `openai-key` in config.yml.")
+            return
+        }
+
         setCommandExecutors()
         registerEvents()
         scheduleTasks()
@@ -48,5 +55,10 @@ class VillagerGPT : SuspendingJavaPlugin() {
 
     private fun scheduleTasks() {
         EndStaleConversationsTask(this).runTaskTimer(this, 0L, 200L)
+    }
+
+    private fun validateConfig(): Boolean {
+        val openAiKey = config.getString("openai-key") ?: return false
+        return openAiKey.trim() != ""
     }
 }
