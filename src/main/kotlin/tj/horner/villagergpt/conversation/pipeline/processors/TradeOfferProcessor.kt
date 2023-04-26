@@ -3,24 +3,29 @@ package tj.horner.villagergpt.conversation.pipeline.processors
 import com.google.gson.Gson
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.MerchantRecipe
+import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.java.JavaPlugin
 import tj.horner.villagergpt.conversation.VillagerConversation
 import tj.horner.villagergpt.conversation.formatting.MessageFormatter
 import tj.horner.villagergpt.conversation.pipeline.ConversationMessageAction
 import tj.horner.villagergpt.conversation.pipeline.ConversationMessageProcessor
 import tj.horner.villagergpt.conversation.pipeline.actions.SendPlayerMessageAction
 import tj.horner.villagergpt.conversation.pipeline.actions.SetTradesAction
+import java.util.logging.Level
+import java.util.logging.Logger
 
-class TradeOfferProcessor : ConversationMessageProcessor {
+class TradeOfferProcessor(private val logger: Logger) : ConversationMessageProcessor {
     private val gson = Gson()
     private val itemFactory = Bukkit.getServer().itemFactory
 
     override fun processMessage(message: String, conversation: VillagerConversation): Collection<ConversationMessageAction> {
-        val tradeExpressionRegex = Regex(" ?TRADE(\\[.+?\\])ENDTRADE ?")
+        val tradeExpressionRegex = Regex("TRADE(\\[.+?\\])ENDTRADE")
         val splitMessage = splitWithMatches(message, tradeExpressionRegex)
 
         val trades = mutableListOf<MerchantRecipe>()
@@ -29,12 +34,18 @@ class TradeOfferProcessor : ConversationMessageProcessor {
 
         splitMessage.forEach {
             if (it.trim().startsWith("TRADE")) {
-                val response = it.replace(Regex("(^TRADE)|(ENDTRADE$)"), "")
-                val trade = parseTradeResponse(response)
-                trades.add(trade)
+                val response = it.trim().replace(Regex("(^TRADE)|(ENDTRADE$)"), "")
 
-                val tradeMessage = chatFormattedRecipe(trade)
-                messageComponent.append(tradeMessage)
+                try {
+                    val trade = parseTradeResponse(response)
+                    trades.add(trade)
+
+                    val tradeMessage = chatFormattedRecipe(trade)
+                    messageComponent.append(tradeMessage)
+                } catch(e: Exception) {
+                    logger.log(Level.WARNING, "Chat response contained invalid trade: $response", e)
+                    messageComponent.append(invalidTradeComponent(response))
+                }
             } else {
                 messageComponent.append(Component.text(it).color(NamedTextColor.WHITE))
             }
@@ -65,7 +76,7 @@ class TradeOfferProcessor : ConversationMessageProcessor {
 
         val (numItems, materialString) = matches.destructured
         val stack = itemFactory.createItemStack(materialString)
-        stack.amount = numItems.toInt()
+        stack.amount = numItems.toInt().coerceAtMost(64)
 
         return stack
     }
@@ -91,6 +102,14 @@ class TradeOfferProcessor : ConversationMessageProcessor {
         component.color(NamedTextColor.DARK_GREEN)
 
         return component.build()
+    }
+
+    private fun invalidTradeComponent(rawTrade: String): Component {
+        return Component.text()
+            .content("[Invalid Trade]")
+            .hoverEvent(HoverEvent.showText(Component.text("The response contained a recipe for an invalid trade. Here is the attempted recipe:\n\n$rawTrade")))
+            .color(NamedTextColor.RED)
+            .build()
     }
 
     private fun splitWithMatches(input: String, regex: Regex): List<String> {

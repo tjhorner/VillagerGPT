@@ -21,7 +21,7 @@ class VillagerGPT : SuspendingJavaPlugin() {
         OpenAIMessageProducer(config),
         listOf(
             ActionProcessor(),
-            TradeOfferProcessor()
+            TradeOfferProcessor(logger)
         )
     )
 

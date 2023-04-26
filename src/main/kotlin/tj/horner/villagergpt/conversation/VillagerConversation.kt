@@ -96,7 +96,10 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
 
         TRADE[["{qty} {item}"],["{qty} {item}"]]ENDTRADE
 
-        Where {item} is the Minecraft item ID (i.e., "minecraft:emerald") and {qty} is the amount of that item. You may choose to trade with emeralds or barter with players for other items; it is up to you. The first array is the items you wish to receive; the second is the items you wish to give.
+        Where {item} is the Minecraft item ID (i.e., "minecraft:emerald") and {qty} is the amount of that item.
+        You may choose to trade with emeralds or barter with players for other items; it is up to you.
+        The first array is the items the YOU receive; the second is the item the PLAYER receives. The second array can only contain a single offer.
+        {qty} is limited to 64.
 
         Examples:
         TRADE[["24 minecraft:emerald"],["1 minecraft:arrow"]]ENDTRADE
@@ -137,7 +140,7 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
         - ${personality.promptDescription()}
         - Act like a villager and stay in character the whole time
         - Do not reveal to the player the fact that you are a character in a video game, and do not mention Minecraft by name
-        - Speak mildly medieval English
+        - Speak in a mildly medieval style
         """.trimIndent()
     }
 
