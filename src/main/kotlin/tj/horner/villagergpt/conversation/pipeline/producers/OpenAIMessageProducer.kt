@@ -26,7 +26,7 @@ class OpenAIMessageProducer(config: Configuration) : ConversationMessageProducer
             model = model,
             messages = conversation.messages,
             temperature = 0.7,
-            user = conversation.player.uniqueId.toString()
+            user = conversation.player.id
         )
 
         val completion = openAI.chatCompletion(request)

@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import tj.horner.villagergpt.ConfigurationProvider
 import tj.horner.villagergpt.MetadataKey
 import tj.horner.villagergpt.VillagerGPT
 import tj.horner.villagergpt.chat.ChatMessageTemplate
@@ -20,8 +21,13 @@ import tj.horner.villagergpt.conversation.formatting.MessageFormatter
 import tj.horner.villagergpt.events.VillagerConversationEndEvent
 import tj.horner.villagergpt.events.VillagerConversationMessageEvent
 import tj.horner.villagergpt.events.VillagerConversationStartEvent
+import java.util.logging.Logger
 
-class ConversationEventsHandler(private val plugin: VillagerGPT) : Listener {
+class ConversationEventsHandler(
+    private val plugin: VillagerGPT,
+    private val config: ConfigurationProvider,
+    private val logger: Logger
+) : Listener {
     @EventHandler
     fun onConversationStart(evt: VillagerConversationStartEvent) {
         val message = Component.text("You are now in a conversation with ")
@@ -34,7 +40,7 @@ class ConversationEventsHandler(private val plugin: VillagerGPT) : Listener {
         evt.conversation.villager.isAware = false
         evt.conversation.villager.lookAt(evt.conversation.player)
 
-        plugin.logger.info("Conversation started between ${evt.conversation.player.name} and ${evt.conversation.villager.name}")
+        logger.info("Conversation started between ${evt.conversation.player.name} and ${evt.conversation.villager.name}")
     }
 
     @EventHandler
@@ -49,7 +55,7 @@ class ConversationEventsHandler(private val plugin: VillagerGPT) : Listener {
         evt.villager.resetOffers()
         evt.villager.isAware = true
 
-        plugin.logger.info("Conversation ended between ${evt.player.name} and ${evt.villager.name}")
+        logger.info("Conversation ended between ${evt.player.name} and ${evt.villager.name}")
     }
 
     @EventHandler
@@ -134,8 +140,8 @@ class ConversationEventsHandler(private val plugin: VillagerGPT) : Listener {
     @OptIn(BetaOpenAI::class)
     @EventHandler
     fun onConversationMessage(evt: VillagerConversationMessageEvent) {
-        if (!plugin.config.getBoolean("log-conversations")) return
-        plugin.logger.info("Message between ${evt.conversation.player.name} and ${evt.conversation.villager.name}: ${evt.message}")
+        if (!config.logConversations) return
+        logger.info("Message between ${evt.conversation.player.name} and ${evt.conversation.villager.name}: ${evt.message}")
     }
 
     @EventHandler

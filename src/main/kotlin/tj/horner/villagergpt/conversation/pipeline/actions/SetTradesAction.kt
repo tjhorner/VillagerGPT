@@ -1,12 +1,12 @@
 package tj.horner.villagergpt.conversation.pipeline.actions
 
-import org.bukkit.entity.Villager
 import org.bukkit.inventory.MerchantRecipe
+import tj.horner.villagergpt.conversation.dto.TradeOfferDto
+import tj.horner.villagergpt.conversation.interfaces.AbstractVillager
 import tj.horner.villagergpt.conversation.pipeline.ConversationMessageAction
 
-class SetTradesAction(private val villager: Villager, private val trades: List<MerchantRecipe>) : ConversationMessageAction {
+class SetTradesAction(private val villager: AbstractVillager, private val trades: List<TradeOfferDto>) : ConversationMessageAction {
     override fun run() {
-        villager.resetOffers()
-        villager.recipes = trades
+        villager.setTrades(trades)
     }
 }

@@ -3,6 +3,8 @@ package tj.horner.villagergpt
 import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin
 import com.github.shynixn.mccoroutine.bukkit.registerSuspendingEvents
 import com.github.shynixn.mccoroutine.bukkit.setSuspendingExecutor
+import org.bukkit.event.Listener
+import tj.horner.villagergpt.bukkit.BukkitConfigurationProvider
 import tj.horner.villagergpt.commands.ClearCommand
 import tj.horner.villagergpt.commands.EndCommand
 import tj.horner.villagergpt.commands.TalkCommand
@@ -16,7 +18,9 @@ import tj.horner.villagergpt.tasks.EndStaleConversationsTask
 import java.util.logging.Level
 
 class VillagerGPT : SuspendingJavaPlugin() {
-    val conversationManager = VillagerConversationManager(this)
+    private val configurationProvider = BukkitConfigurationProvider(config)
+
+    val conversationManager = VillagerConversationManager(this, configurationProvider)
     val messagePipeline = MessageProcessorPipeline(
         OpenAIMessageProducer(config),
         listOf(
@@ -50,7 +54,13 @@ class VillagerGPT : SuspendingJavaPlugin() {
     }
 
     private fun registerEvents() {
-        server.pluginManager.registerSuspendingEvents(ConversationEventsHandler(this), this)
+        val eventHandlers = listOf<Listener>(
+                ConversationEventsHandler(this, configurationProvider, logger)
+        )
+
+        eventHandlers.forEach {
+            server.pluginManager.registerSuspendingEvents(it, this)
+        }
     }
 
     private fun scheduleTasks() {

@@ -4,16 +4,20 @@ import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.destroystokyo.paper.entity.villager.ReputationType
-import org.bukkit.entity.Player
-import org.bukkit.entity.Villager
 import org.bukkit.plugin.Plugin
+import tj.horner.villagergpt.conversation.interfaces.AbstractPlayer
+import tj.horner.villagergpt.conversation.interfaces.AbstractVillager
 import tj.horner.villagergpt.events.VillagerConversationMessageEvent
 import java.time.Duration
 import java.util.*
 import kotlin.random.Random
 
 @OptIn(BetaOpenAI::class)
-class VillagerConversation(private val plugin: Plugin, val villager: Villager, val player: Player) {
+class VillagerConversation(
+    private val plugin: Plugin,
+    val villager: AbstractVillager,
+    val player: AbstractPlayer
+) {
     private var lastMessageAt: Date = Date()
 
     val messages = mutableListOf<ChatMessage>()
@@ -51,12 +55,8 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
     }
 
     fun hasPlayerLeft(): Boolean {
-        if (player.location.world != villager.location.world) return true
-
-        val radius = 20.0 // blocks?
-        val radiusSquared = radius * radius
-        val distanceSquared = player.location.distanceSquared(villager.location)
-        return distanceSquared > radiusSquared
+        if (!player.isInSameWorld(villager)) return true
+        return player.isFarAwayFrom(villager)
     }
 
     private fun startConversation() {
@@ -79,11 +79,11 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
 
     private fun generateSystemPrompt(): String {
         val world = villager.world
-        val weather = if (world.hasStorm()) "Rainy" else "Sunny"
-        val biome = world.getBiome(villager.location)
+        val weather = if (world.isStormy) "Rainy" else "Sunny"
+        val biome = villager.currentBiomeName
         val time = if (world.isDayTime) "Day" else "Night"
         val personality = getPersonality()
-        val playerRep = getPlayerRepScore()
+        val playerRep = villager.getReputationWithPlayer(player)
 
         plugin.logger.info("${villager.name} is $personality")
 
@@ -128,7 +128,7 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
         World information:
         - Time: $time
         - Weather: $weather
-        - Biome: ${biome.name}
+        - Biome: $biome
 
         Player information:
         - Name: ${player.name}
@@ -136,7 +136,7 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
 
         Personality:
         - Your Name: ${villager.name}
-        - Your Profession: ${villager.profession.name}
+        - Your Profession: ${villager.profession}
         - ${personality.promptDescription()}
         - Act like a villager and stay in character the whole time
         - Do not reveal to the player the fact that you are a character in a video game, and do not mention Minecraft by name
@@ -146,26 +146,7 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
 
     private fun getPersonality(): VillagerPersonality {
         val personalities = VillagerPersonality.values()
-        val rnd = Random(villager.uniqueId.mostSignificantBits)
+        val rnd = Random(villager.stableRandomSeed)
         return personalities[rnd.nextInt(0, personalities.size)]
-    }
-
-    private fun getPlayerRepScore(): Int {
-        var finalScore = 0
-        val rep = villager.getReputation(player.uniqueId) ?: return 0
-
-        ReputationType.values().forEach {
-            val repTypeValue = rep.getReputation(it)
-            finalScore += when (it) {
-                ReputationType.MAJOR_POSITIVE -> repTypeValue * 5
-                ReputationType.MINOR_POSITIVE -> repTypeValue
-                ReputationType.MINOR_NEGATIVE -> -repTypeValue
-                ReputationType.MAJOR_NEGATIVE -> -repTypeValue * 5
-                ReputationType.TRADING -> repTypeValue
-                else -> repTypeValue
-            }
-        }
-
-        return finalScore
     }
 }
