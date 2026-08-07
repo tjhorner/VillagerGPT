@@ -33,19 +33,12 @@ AI villagers have access to the following information:
 
 They can perform the following actions in their responses:
 
-- Propose trades
+- Propose one or more trades
 - Shake head
 - Play various sounds
+- End the conversation
 
-AI villagers also have one of these randomly selected personalities:
-
-- Elder: "As an elder of the village, you have seen and done many things across the years"
-- Optimist: "You are an optimist that always tries to look on the bright side of things"
-- Grumpy: "You are a grump that isn't afraid to speak his mind"
-- Barterer: "You are a shrewd trader that has much experience in bartering"
-- Jester: "You enjoy telling funny jokes and are generally playful toward players"
-- Serious: "You are serious and to-the-point; you do not have much patience for small talk"
-- Empath: "You are a kind person and very empathetic to others' situations"
+Each villager is randomly assigned one of the personalities configured in `personalities` in `config.yml` (see below) when a conversation with them starts, and keeps it from then on.
 
 ## Configuration
 
@@ -56,6 +49,10 @@ Villagers propose trades and perform actions using tool/function calling, so `op
 ### Using a different API provider
 
 `openai-base-url` in `config.yml` can be pointed at any API compatible with OpenAI's chat completions endpoint — Azure OpenAI, OpenRouter, or a self-hosted model server such as Ollama, LM Studio, or vLLM. Make sure whichever model you choose supports tool/function calling.
+
+### Personalities
+
+The `personalities` list in `config.yml` controls which personalities villagers can be assigned. Each entry has a `name` (just a label, shown in server logs) and a `description` (fed to the model as part of its instructions). Add, remove, or edit entries to change the mix.
 
 ## Commands
 

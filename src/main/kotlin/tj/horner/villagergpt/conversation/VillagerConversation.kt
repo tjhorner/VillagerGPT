@@ -74,7 +74,9 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
         val personality = getPersonality()
         val playerRep = getPlayerRepScore()
 
-        plugin.logger.info("${villager.name} is $personality")
+        if (personality != null) {
+            plugin.logger.info("${villager.name} is $personality")
+        }
 
         return """
         You are a villager in the game Minecraft where you can converse with the player and come up with new trades based on your conversation.
@@ -117,15 +119,17 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
         Personality:
         - Your Name: ${villager.name}
         - Your Profession: ${villager.profession.key().value()}
-        - ${personality.promptDescription()}
+        ${if (personality != null) "- ${personality.description}" else ""}
         - Act like a villager and stay in character the whole time
         - Do not reveal to the player the fact that you are a character in a video game, and do not mention Minecraft by name
         - Speak in a mildly medieval style
         """.trimIndent()
     }
 
-    private fun getPersonality(): VillagerPersonality {
-        val personalities = VillagerPersonality.values()
+    private fun getPersonality(): VillagerPersonality? {
+        val personalities = VillagerPersonality.loadFrom(plugin.config)
+        if (personalities.isEmpty()) return null
+
         val rnd = Random(villager.uniqueId.mostSignificantBits)
         return personalities[rnd.nextInt(0, personalities.size)]
     }

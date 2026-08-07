@@ -1,34 +1,18 @@
 package tj.horner.villagergpt.conversation
 
-enum class VillagerPersonality {
-    ELDER {
-        override fun promptDescription(): String =
-            "As an elder of the village, you have seen and done many things across the years"
-    },
-    OPTIMIST {
-        override fun promptDescription(): String =
-            "You are an optimist that always tries to look on the bright side of things"
-    },
-    GRUMPY {
-        override fun promptDescription(): String =
-            "You are a grump that isn't afraid to speak his mind"
-    },
-    BARTERER {
-        override fun promptDescription(): String =
-            "You are a shrewd trader that has much experience in bartering"
-    },
-    JESTER {
-        override fun promptDescription(): String =
-            "You enjoy telling funny jokes and are generally playful toward players"
-    },
-    SERIOUS {
-        override fun promptDescription(): String =
-            "You are serious and to-the-point; you do not have much patience for small talk"
-    },
-    EMPATH {
-        override fun promptDescription(): String =
-            "You are a kind person and very empathetic to others' situations"
-    };
+import org.bukkit.configuration.Configuration
 
-    abstract fun promptDescription(): String
+data class VillagerPersonality(val name: String, val description: String) {
+    override fun toString() = name
+
+    companion object {
+        /** Reads the `personalities` list from config.yml. Empty if it's missing or every entry is malformed. */
+        fun loadFrom(config: Configuration): List<VillagerPersonality> {
+            return config.getMapList("personalities").mapNotNull { entry ->
+                val name = entry["name"] as? String ?: return@mapNotNull null
+                val description = entry["description"] as? String ?: return@mapNotNull null
+                VillagerPersonality(name, description)
+            }
+        }
+    }
 }
