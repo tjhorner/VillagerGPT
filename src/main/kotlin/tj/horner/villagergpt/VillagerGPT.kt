@@ -7,21 +7,25 @@ import tj.horner.villagergpt.commands.ClearCommand
 import tj.horner.villagergpt.commands.EndCommand
 import tj.horner.villagergpt.commands.TalkCommand
 import tj.horner.villagergpt.conversation.VillagerConversationManager
-import tj.horner.villagergpt.conversation.pipeline.MessageProcessorPipeline
-import tj.horner.villagergpt.conversation.pipeline.processors.ActionProcessor
-import tj.horner.villagergpt.conversation.pipeline.processors.TradeOfferProcessor
+import tj.horner.villagergpt.conversation.pipeline.ConversationPipeline
 import tj.horner.villagergpt.conversation.pipeline.producers.OpenAIMessageProducer
+import tj.horner.villagergpt.conversation.tools.EndConversationTool
+import tj.horner.villagergpt.conversation.tools.PlaySoundTool
+import tj.horner.villagergpt.conversation.tools.ProposeTradeTool
+import tj.horner.villagergpt.conversation.tools.ShakeHeadTool
 import tj.horner.villagergpt.handlers.ConversationEventsHandler
 import tj.horner.villagergpt.tasks.EndStaleConversationsTask
 import java.util.logging.Level
 
 class VillagerGPT : SuspendingJavaPlugin() {
     val conversationManager = VillagerConversationManager(this)
-    val messagePipeline = MessageProcessorPipeline(
+    val messagePipeline = ConversationPipeline(
         OpenAIMessageProducer(config),
         listOf(
-            ActionProcessor(),
-            TradeOfferProcessor(logger)
+            ProposeTradeTool(logger),
+            ShakeHeadTool(),
+            PlaySoundTool(),
+            EndConversationTool(conversationManager)
         )
     )
 

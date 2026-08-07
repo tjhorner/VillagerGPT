@@ -49,13 +49,13 @@ AI villagers also have one of these randomly selected personalities:
 
 ## Configuration
 
-To configure this plugin you will need an OpenAI API key and, optionally, GPT-4 access. You can obtain an API key [here](https://platform.openai.com/). Once you have obtained one, place it in the plugin's `config.yml` under `openai-key`.
+To configure this plugin you will need an OpenAI API key. You can obtain one [here](https://platform.openai.com/). Once you have obtained one, place it in the plugin's `config.yml` under `openai-key`.
 
-### GPT-4
+Villagers propose trades and perform actions using tool/function calling, so `openai-model` must be set to a model that supports it (the default, `gpt-4o-mini`, does).
 
-If you have GPT-4 access, it is highly recommended you switch the model in the config to use GPT-4 instead of the default model. GPT-4 is significantly better at listening to the `system` message and thus following instructions.
+### Using a different API provider
 
-You can switch to GPT-4 by replacing `openai-model` in `config.yml` with `gpt-4`.
+`openai-base-url` in `config.yml` can be pointed at any API compatible with OpenAI's chat completions endpoint — Azure OpenAI, OpenRouter, or a self-hosted model server such as Ollama, LM Studio, or vLLM. Make sure whichever model you choose supports tool/function calling.
 
 ## Commands
 

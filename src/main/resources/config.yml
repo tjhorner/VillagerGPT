@@ -1,13 +1,19 @@
 # Obtain a key here: https://platform.openai.com
 openai-key: ""
 
-# If you have GPT-4 access, it is highly recommended to use it here.
-# Switch this to "gpt-4" if you do.
-openai-model: "gpt-3.5-turbo"
+# The model to use. Must support tool/function calling.
+openai-model: "gpt-4o-mini"
+
+# The base URL of the OpenAI-compatible API to use. Change this to point at
+# Azure OpenAI, OpenRouter, a self-hosted model server (Ollama, LM Studio,
+# vLLM, etc.), or any other API compatible with OpenAI's chat completions
+# endpoint.
+openai-base-url: "https://api.openai.com/v1"
+
+# Only applies to reasoning models (e.g., o-series, gpt-5 family). One of
+# "minimal", "low", "medium", or "high". Leave blank to omit it, which is
+# required for non-reasoning models.
+openai-reasoning-effort: ""
 
 # Log conversation messages to server console, useful for catching abuse
 log-conversations: true
-
-# Either "system" or "user"; configures the type of message the "preamble"
-# will be. "user" is more likely to work with GPT-3.5
-preamble-message-type: user

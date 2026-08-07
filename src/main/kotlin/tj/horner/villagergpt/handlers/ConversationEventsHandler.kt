@@ -1,8 +1,8 @@
 package tj.horner.villagergpt.handlers
 
-import com.aallam.openai.api.BetaOpenAI
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import io.papermc.paper.event.player.AsyncChatEvent
+import io.papermc.paper.event.player.PlayerTradeEvent
 import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -13,6 +13,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.MerchantRecipe
 import tj.horner.villagergpt.MetadataKey
 import tj.horner.villagergpt.VillagerGPT
 import tj.horner.villagergpt.chat.ChatMessageTemplate
@@ -20,6 +22,7 @@ import tj.horner.villagergpt.conversation.formatting.MessageFormatter
 import tj.horner.villagergpt.events.VillagerConversationEndEvent
 import tj.horner.villagergpt.events.VillagerConversationMessageEvent
 import tj.horner.villagergpt.events.VillagerConversationStartEvent
+import java.util.logging.Level
 
 class ConversationEventsHandler(private val plugin: VillagerGPT) : Listener {
     @EventHandler
@@ -131,7 +134,42 @@ class ConversationEventsHandler(private val plugin: VillagerGPT) : Listener {
         }
     }
 
-    @OptIn(BetaOpenAI::class)
+    @EventHandler
+    suspend fun onPlayerTrade(evt: PlayerTradeEvent) {
+        val villager = evt.villager as? Villager ?: return
+        val conversation = plugin.conversationManager.getConversation(villager) ?: return
+        if (conversation.pendingResponse) return
+
+        conversation.pendingResponse = true
+
+        try {
+            val eventDescription = describeCompletedTrade(evt.trade)
+            val actions = plugin.messagePipeline.reactToEvent(eventDescription, conversation)
+
+            if (!conversation.ended) {
+                withContext(plugin.minecraftDispatcher) {
+                    actions.forEach { it.run() }
+                }
+            }
+        } catch (e: Exception) {
+            plugin.logger.log(Level.WARNING, "Failed to get ${villager.name}'s reaction to a completed trade", e)
+        } finally {
+            conversation.pendingResponse = false
+        }
+    }
+
+    private fun describeCompletedTrade(trade: MerchantRecipe): String {
+        val paid = trade.ingredients.joinToString(" and ") { describeItemStack(it) }
+        val received = describeItemStack(trade.result)
+        return "The player just completed a trade with you: they gave you $paid and received $received in " +
+            "return. Reply with only your brief in-character reaction to this; do not use a tool."
+    }
+
+    private fun describeItemStack(stack: ItemStack): String {
+        val name = PlainTextComponentSerializer.plainText().serialize(stack.displayName())
+        return "${stack.amount}x $name"
+    }
+
     @EventHandler
     fun onConversationMessage(evt: VillagerConversationMessageEvent) {
         if (!plugin.config.getBoolean("log-conversations")) return

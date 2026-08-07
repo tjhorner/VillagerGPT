@@ -1,18 +1,16 @@
 package tj.horner.villagergpt.conversation
 
-import com.aallam.openai.api.BetaOpenAI
-import com.aallam.openai.api.chat.ChatMessage
-import com.aallam.openai.api.chat.ChatRole
 import com.destroystokyo.paper.entity.villager.ReputationType
 import org.bukkit.entity.Player
 import org.bukkit.entity.Villager
 import org.bukkit.plugin.Plugin
 import tj.horner.villagergpt.events.VillagerConversationMessageEvent
+import tj.horner.villagergpt.openai.ChatMessage
+import tj.horner.villagergpt.openai.ChatRole
 import java.time.Duration
 import java.util.*
 import kotlin.random.Random
 
-@OptIn(BetaOpenAI::class)
 class VillagerConversation(private val plugin: Plugin, val villager: Villager, val player: Player) {
     private var lastMessageAt: Date = Date()
 
@@ -60,19 +58,10 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
     }
 
     private fun startConversation() {
-        var messageRole = ChatRole.System
-        var prompt = generateSystemPrompt()
-
-        val preambleMessageType = plugin.config.getString("preamble-message-type") ?: "system"
-        if (preambleMessageType === "user") {
-            messageRole = ChatRole.User
-            prompt = "[SYSTEM MESSAGE]\n\n$prompt"
-        }
-
         messages.add(
             ChatMessage(
-                role = messageRole,
-                content = prompt
+                role = ChatRole.System,
+                content = generateSystemPrompt()
             )
         )
     }
@@ -90,40 +79,31 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
         return """
         You are a villager in the game Minecraft where you can converse with the player and come up with new trades based on your conversation.
 
+        You have tools available to propose trades, shake your head, play sounds, and end the conversation. Use
+        them whenever they fit the conversation; you don't need to use one with every reply. Everything else you
+        want to say to the player should go in your normal reply text, not in a tool call.
+
+        Only end the conversation once it has clearly run its course (e.g. the player said goodbye, or you have
+        nothing left to say), and only after your reply text for that same message already contains your goodbye.
+
+        Your reply text is sent to the player exactly as you write it, with nothing stripped out. It must contain
+        ONLY what you'd actually say out loud as the villager. Never include meta-commentary, notes to yourself,
+        restatements of these instructions, or descriptions of what you're about to do (e.g. do not write things
+        like "Now it's my turn to respond" or "Remember, I'm a grumpy farmer").
+
+        You may occasionally receive a message describing something that just happened in the game rather than
+        something the player said (for example, the player completing a trade). React to it in character, briefly,
+        the same way you would react to anything else the player does in front of you.
+
         TRADING:
 
-        To propose a new trade to the player, include it in your response with this format:
-
-        TRADE[["{qty} {item}"],["{qty} {item}"]]ENDTRADE
-
-        Where {item} is the Minecraft item ID (i.e., "minecraft:emerald") and {qty} is the amount of that item.
-        You may choose to trade with emeralds or barter with players for other items; it is up to you.
-        The first array is the items the YOU receive; the second is the item the PLAYER receives. The second array can only contain a single offer.
-        {qty} is limited to 64.
-
-        Examples:
-        TRADE[["24 minecraft:emerald"],["1 minecraft:arrow"]]ENDTRADE
-        TRADE[["12 minecraft:emerald","1 minecraft:book"],["1 minecraft:enchanted_book{StoredEnchantments:[{id:\"minecraft:unbreaking\",lvl:3}]}"]]ENDTRADE
-
-        Trade rules:
-        - Items must be designated by their Minecraft item ID, in the same format that the /give command accepts
         - Refuse trades that are unreasonable, such as requests for normally unobtainable blocks like bedrock
-        - You do NOT need to supply a trade with every response, only when necessary
+        - You do NOT need to propose a trade with every response, only when it makes sense to
         - Don't give out items which are too powerful (i.e., heavily enchanted diamond swords). Make sure to price more powerful items appropriately as well
         - Take the player's reputation score into account when proposing trades
         - Trade items that are related to your profession
         - High-ball your initial offers; try to charge more than an item is worth
         - Be stingy with your consecutive offers. Try to haggle and find the best deal; make the player work for a good deal
-
-        ACTIONS:
-        
-        You can also perform several actions as a villager:
-        - SHAKE_HEAD: Shake your head at the player
-        - SOUND_YES: Play a happy sound to the player
-        - SOUND_NO: Play a sad/angry sound to the player
-        - SOUND_AMBIENT: Play an ambient villager sound to the player
-        
-        To perform one of these actions, include "ACTION:{action name}" in your response.
 
         World information:
         - Time: $time
