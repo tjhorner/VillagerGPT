@@ -1,7 +1,7 @@
 name: VillagerGPT
 version: '${version}'
 main: tj.horner.villagergpt.VillagerGPT
-api-version: 1.19
+api-version: '26.2'
 commands:
   ttv:
     description: Start a conversation with a villager

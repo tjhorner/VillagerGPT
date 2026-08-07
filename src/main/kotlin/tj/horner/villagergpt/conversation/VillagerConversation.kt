@@ -128,7 +128,7 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
         World information:
         - Time: $time
         - Weather: $weather
-        - Biome: ${biome.name}
+        - Biome: ${biome.key().value()}
 
         Player information:
         - Name: ${player.name}
@@ -136,7 +136,7 @@ class VillagerConversation(private val plugin: Plugin, val villager: Villager, v
 
         Personality:
         - Your Name: ${villager.name}
-        - Your Profession: ${villager.profession.name}
+        - Your Profession: ${villager.profession.key().value()}
         - ${personality.promptDescription()}
         - Act like a villager and stay in character the whole time
         - Do not reveal to the player the fact that you are a character in a video game, and do not mention Minecraft by name
